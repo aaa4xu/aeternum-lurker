@@ -22,7 +22,7 @@ if __name__ == '__main__':
         items = resp.json()
 
         for item in items:
-            game.tp_search(item['search_query'])
+            game.tp_search(item['search_query'], item['search_offset'])
             sleep(2)
 
             tp_image = Image.fromarray(capture.screenshot(), 'L')

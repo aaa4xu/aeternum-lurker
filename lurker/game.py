@@ -40,11 +40,11 @@ class GameWindow:
         sleep(duration)
         pyautogui.keyUp(key)
 
-    def tp_search(self, text):
+    def tp_search(self, text, offset=0):
         self.clickTo(NWUI.search_clear_btn[0], NWUI.search_clear_btn[1])
         self.clickTo(NWUI.search_input[0], NWUI.search_input[1])
         self.write(text)
-        self.clickTo(NWUI.search_result[0], NWUI.search_result[1])
+        self.clickTo(NWUI.search_result[0], NWUI.search_result[1] + offset)
 
     def anti_afk(self):
         self.press('esc')
