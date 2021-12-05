@@ -57,7 +57,12 @@ class PriceDigitsOCR(BaseOCR):
             # Перемещение курсора в конец текущего символа
             offset = char_end
 
-        return int(result.replace('q', '').replace('d', ''))
+        price_str = result.replace('q', '').replace('d', '')
+
+        if len(price_str) == 0:
+            return 0
+        else:
+            return int(price_str)
 
     def __expand2square(self, pil_img, background_color):
         width, height = pil_img.size
