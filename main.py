@@ -27,18 +27,26 @@ if __name__ == '__main__':
         tp_image = Image.fromarray(capture.screenshot(), 'L')
         tp_image.save(f'screens/{timestamp}/{item["name"]}.png')
 
-        try:
-            orders = processor.process(tp_image)
+        orders = processor.process(tp_image)
 
-            requests.post('http://192.168.1.90:3401/api/v2/prices', json={
-                "item": item['name'],
-                "orders": orders,
-                "timestamp": timestamp
-            })
-        except ValueError:
-            print(f"{timestamp} {item['name']}: ERROR: OCR is failed")
-        except requests.exceptions.RequestException:
-            print(f"{timestamp} {item['name']}: ERROR: API request failed")
+        requests.post('http://192.168.1.90:3401/api/v2/prices', json={
+            "item": item['name'],
+            "orders": orders,
+            "timestamp": timestamp
+        })
+
+        # try:
+        #     orders = processor.process(tp_image)
+        #
+        #     requests.post('http://192.168.1.90:3401/api/v2/prices', json={
+        #         "item": item['name'],
+        #         "orders": orders,
+        #         "timestamp": timestamp
+        #     })
+        # except ValueError:
+        #     print(f"{timestamp} {item['name']}: ERROR: OCR is failed")
+        # except requests.exceptions.RequestException:
+        #     print(f"{timestamp} {item['name']}: ERROR: API request failed")
 
     game.anti_afk()
     sleep_duration = 9 * 60 - (time() - timestamp)
