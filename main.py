@@ -24,8 +24,7 @@ if __name__ == '__main__':
         sleep(2)
 
         try:
-            tp_image = capture.screenshot()
-            orders = processor.process(bytes)
+            orders = processor.process(capture.screenshot())
             for x in orders:
                 print(x)
 
