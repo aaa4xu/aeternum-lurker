@@ -8,8 +8,7 @@ class BuyOrdersProcessor:
         self.price_ocr = PriceDigitsOCR("datasets/price-digits", 40)
         self.towns_ocr = BaseOCR("datasets/towns")
 
-    def process(self, image_bytes):
-        image = Image.fromarray(image_bytes, 'L')
+    def process(self, image):
         orders = [image.crop((0, x * NWUI.order_height, image.width, (x + 1) * NWUI.order_height)) for x in range(NWUI.orders_per_page)]
         return [{ 'town': self.__predict_town(x), 'price': self.__predict_price(x), 'amount': self.__predict_amount(x) } for x in orders]
 

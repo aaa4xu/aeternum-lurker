@@ -3,6 +3,7 @@ from lurker.game import GameWindow
 from time import time, sleep
 from lurker.nwconfig import NWUI
 from lurker.processors import BuyOrdersProcessor
+from PIL import Image
 import requests
 import os
 
@@ -23,37 +24,23 @@ if __name__ == '__main__':
         game.tp_search(item['search_query'])
         sleep(2)
 
-        try:
-            orders = processor.process(capture.screenshot())
-            for x in orders:
-                print(x)
+        tp_image = Image.fromarray(capture.screenshot(), 'L')
+        tp_image.save(f'screens/{timestamp}/{item["name"]}.png')
 
-            # tp_image = game.capture()
-            # price_image = price_ocr.crop_tpost(tp_image)
-            # price_image.save(f"screens/{timestamp}/{item['name']}-tp.png")
-            # prices = [price_ocr.process(price_image)]
-            #
-            # with open(f"screens/{timestamp}/{item['name']}-ocr.txt", "w") as text_file:
-            #     text_file.writelines([str(x) for x in prices])
-            #
-            # # prices = list((map(lambda x: int(x), filter(lambda x: len(x) > 0, prices))))
-            # print(f"{item['name']}: {str(prices[0] / 100)}")
-            #
-            # index = 0
-            # requests.post('http://192.168.1.90:3401/api/price', json={
-            #     "item": item['name'],
-            #     "index": index,
-            #     "price": prices[index],
-            #     "timestamp": timestamp
-            # })
+        try:
+            orders = processor.process(tp_image)
+
+            requests.post('http://192.168.1.90:3401/api/v2/prices', json={
+                "item": item['name'],
+                "orders": orders,
+                "timestamp": timestamp
+            })
         except ValueError:
-            print(f"{item['name']}: ERROR: OCR is failed")
-        except requests.exceptions.RequestException as e:
-            print(f"{item['name']}: ERROR: API Request failed")
-        except IndexError:
-            print(f"{item['name']}: list index out of range")
+            print(f"{timestamp} {item['name']}: ERROR: OCR is failed")
+        except requests.exceptions.RequestException:
+            print(f"{timestamp} {item['name']}: ERROR: API request failed")
 
     game.anti_afk()
-    sleep_duration = 14 * 60 - (time() - timestamp)
+    sleep_duration = 9 * 60 - (time() - timestamp)
     print(f'Sleep for {sleep_duration}sec')
     sleep(sleep_duration)
