@@ -1,11 +1,12 @@
 from PIL import Image
 from lurker.nwconfig import NWUI
-from lurker.ocr import PriceDigitsOCR, BaseOCR
+from lurker.ocr import DigitsOCR, BaseOCR
 
 
 class BuyOrdersProcessor:
     def __init__(self):
-        self.price_ocr = PriceDigitsOCR("datasets/price-digits", 40)
+        self.price_ocr = DigitsOCR("datasets/price-digits", 40, 20)
+        self.amount_ocr = DigitsOCR("datasets/amount-digits", 40, 20)
         self.towns_ocr = BaseOCR("datasets/towns")
 
     def process(self, image):
@@ -37,4 +38,10 @@ class BuyOrdersProcessor:
         return self.price_ocr.predict(price_image)
 
     def __predict_amount(self, order_image):
-        return 1
+        amount_image = order_image.crop((
+            NWUI.amount_x - NWUI.amount_width // 2,
+            0,
+            NWUI.amount_x + NWUI.amount_width // 2,
+            order_image.height
+        ))
+        return self.amount_ocr.predict(amount_image)

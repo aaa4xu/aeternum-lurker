@@ -11,6 +11,10 @@ class NWUI:
     orders_per_page = 9
     # Положение ячейки с городом
     order_town_offset = 2020
+    # Координата середины кол-ва предметов в лоте
+    amount_x = 1682
+    # Ширина кол-ва предметов в лоте
+    amount_width = 126
 
     search_clear_btn = (1130, 460)
     search_input = (360, 460)

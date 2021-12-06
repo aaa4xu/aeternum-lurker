@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 from os import listdir
 from os.path import isfile, join
@@ -21,10 +23,12 @@ class BaseOCR:
         return min(results, key=results.get)
 
 
-class PriceDigitsOCR(BaseOCR):
-    def __init__(self, dataset_path, height):
+class DigitsOCR(BaseOCR):
+    def __init__(self, dataset_path, height, max_char_width, debug=False):
         super().__init__(dataset_path)
         self.height = height
+        self.max_char_width = max_char_width
+        self.debug = debug
 
     def predict(self, price_image):
         means = np.mean(price_image, axis=0)
@@ -40,7 +44,7 @@ class PriceDigitsOCR(BaseOCR):
             # Обнаружение следующего нулевого столбца
             char_end = offset + means_oz[offset:].argmax(axis=0)
 
-            if char_end - offset > 20:
+            if char_end - offset > self.max_char_width:
                 char_end = offset + (char_end - offset) // 2
 
             # Пропуск пустого пространства между символами
@@ -53,7 +57,12 @@ class PriceDigitsOCR(BaseOCR):
             # Нормализация размера
             char = self.__expand2square(char, (0))
             # Сохранение в массив символов
-            result += super().predict(char)
+            pred = super().predict(char)
+            result += pred
+
+            if self.debug:
+                char.save(f"char-{pred}-{random.randint(10000, 99999)}.png")
+
             # Перемещение курсора в конец текущего символа
             offset = char_end
 
